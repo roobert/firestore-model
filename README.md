@@ -1,10 +1,10 @@
 # firestore-model
 
-A small lib for creating model classes using Google's Cloud Firestore schemaless database. 
+Quickly and simply create model classes for Google's Cloud Firestore schemaless database. 
 
 
 ## Overview
-With the release of the of Google's Python 3.7 App Engine came a handful of new libraries for interacting with GCP. The new libs provide a more idiomatic Python development experience. As a part of this upgrade the NDB client library is not compatible with Python 3.7. This small project seeks to replace some of the convenience of the NDB library. Based on the new Dataclasses data structure, it enables you to write useful model classes quickly and simply. 
+This project seeks to provide a similar convenience and utility for using Cloud Firestore with the newly available Python 3.7 App Engine Envinronment as the NDB client library does for using Cloud Datastore with Python 2.7 App Engine.
 
 ## Example
 
