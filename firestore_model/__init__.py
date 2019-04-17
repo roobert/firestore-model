@@ -110,7 +110,7 @@ class Model:
 
   @classmethod
   @require_database
-  def get(cls, doc_id):
+  def get(cls, doc_id, raise_exception=False):
     """ Get a single model instance
       @param cls The class of the instance calling make
       @param doc_id The id of the document to get
@@ -120,6 +120,8 @@ class Model:
       doc_ref = db.collection(cls.__name__).document(doc_id).get()
       return cls(**doc_ref.to_dict())
     except Exception as e:
+      if raise_exception:
+        raise e
       return None
 
   @classmethod
@@ -162,7 +164,7 @@ class Model:
   modified:int
   
   @require_database
-  def delete(self):
+  def delete(self, raise_exception=False):
     """ Removes this model from Cloud Datastore
 
       @raises Exception indicating that deletion failed
@@ -172,7 +174,10 @@ class Model:
       db.collection(collection_name).document(self.id).delete()
       return True
     except Exception as e:
+      if raise_exception:
+        raise e
       print(e)
+      return False
   
   @require_database
   def save(self):
