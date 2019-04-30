@@ -6,6 +6,8 @@ Quickly and simply create model classes for Google's Cloud Firestore schemaless 
 ## Overview
 This project seeks to provide a similar convenience and utility for using Cloud Firestore with the newly available Python 3.7 App Engine Envinronment as the NDB client library does for using Cloud Datastore with Python 2.7 App Engine.
 
+[Blog post describing motivation and further usage](https://medium.com/@jeremy.from.earth/using-dataclasses-firestore-to-replace-ndb-datastore-on-python-3-7-app-engine-e21199b58ef2)
+
 ## Example
 
 ```
