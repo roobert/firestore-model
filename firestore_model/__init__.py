@@ -128,6 +128,7 @@ class Model:
   def make(cls, doc_id=None, save=False, *args, **kwargs): 
     """ Create a new instance of a model class
       @param cls The class of the instance calling make
+      @param doc_id Allow create document with a custom id
       @param save A flag indicating the model should be saved immediately after creation
       @returns A new model instance of type cls
 
