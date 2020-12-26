@@ -5,9 +5,9 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
   name="firestore_model",
-  version="0.0.3",
-  author="Future Projects",
-  author_email="info@futureprojects.io",
+  version="0.0.5",
+  author="Scibeam",
+  author_email="jeremy@scibeam.co",
   description="A wrapper for creating model classes using Google's Cloud Firestore schemaless database",
   long_description=long_description,
   long_description_content_type="text/markdown",

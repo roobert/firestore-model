@@ -12,9 +12,8 @@ class Book(Model):
   title:str
   author:str
   publisher:str
-  year:int 
+  year:int
   pages:int
-
 
 if __name__ == '__main__':
   book_id = '100800604002'
@@ -22,8 +21,8 @@ if __name__ == '__main__':
   b = Book.make(
     title='Sirens of Titan',
     author='Kurt Vonnegut',
-    publisher='Delacorte', 
-    year=1959, 
+    publisher='Delacorte',
+    year=1959,
     pages=319
   )
 

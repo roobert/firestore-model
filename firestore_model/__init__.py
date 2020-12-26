@@ -32,7 +32,7 @@ def require_database(f, *args, **kwargs):
       raise Exception('Database is not defined.')
     else:
       return f(*args, **kwargs)
-  return wrapper 
+  return wrapper
 
 # --------------------------------------------
 #
@@ -48,8 +48,8 @@ class Query(object):
       @param cls The model class to run the query on
       @param A list of query params. The lists can be (key, value) or (key, operator, value)
 
-      While possible, this method is not intended to be called by itself. The intended use 
-      is from within the Model.query method. 
+      While possible, this method is not intended to be called by itself. The intended use
+      is from within the Model.query method.
 
       Examples:
         # Get all users with first name Sonic
@@ -65,12 +65,11 @@ class Query(object):
         for r in result:
           # do something with r
 
-      References: 
-        https://googleapis.github.io/google-cloud-python/latest/firestore/query.html 
+      References:
+        https://googleapis.github.io/google-cloud-python/latest/firestore/query.html
     """
     self.cls = cls
-    self.result = None
-    self.q = db.collection(cls.__name__) 
+    self.q = db.collection(cls.__name__)
 
     # parse the params
     for param in query_params:
@@ -79,16 +78,19 @@ class Query(object):
       if len(param) == 3:
         self.q = self.q.where(*param)
 
-  def get(self):
+  def get(self, limit=None):
     """ Executes the query
       @return Generator object that yields hydrated instances of the class supplied __init__
     """
-    self.result = self.q.get()
-    for r in self.result:
+    if limit:
+      self.q.limit(limit)
+
+    for doc in self.q.stream():
+      doc_data = doc.get(field_path=None)
       if hasattr(self.cls, 'from_dict'):
-        yield self.cls.from_dict(r.to_dict())
+        yield self.cls.from_dict(doc_data)
       else:
-        yield self.cls(**r.to_dict()) 
+        yield self.cls(**doc_data)
 
 @dataclass
 class Model:
@@ -98,7 +100,7 @@ class Model:
   #
   #  static
   #
-  # ------------------------------------------- 
+  # -------------------------------------------
 
   @classmethod
   @require_database
@@ -114,7 +116,7 @@ class Model:
     """ Get a single model instance
       @param cls The class of the instance calling make
       @param doc_id The id of the document to get
-      @return A model instance of type class hydrated w/ data from the database 
+      @return A model instance of type class hydrated w/ data from the database
     """
     try:
       doc_ref = db.collection(cls.__name__).document(doc_id).get()
@@ -134,8 +136,8 @@ class Model:
 
       Example:
         User.make(
-            name = 'Sonic', 
-            location = 'Earth', 
+            name = 'Sonic',
+            location = 'Earth',
             save = True
           )
     """
@@ -156,14 +158,14 @@ class Model:
 
   # --------------------------------------------
   #
-  #  instance 
+  #  instance
   #
-  # ------------------------------------------- 
+  # -------------------------------------------
 
   id:str
   created:int
   modified:int
-  
+
   @require_database
   def delete(self, raise_exception=False):
     """ Removes this model from Cloud Datastore
@@ -179,7 +181,7 @@ class Model:
         raise e
       print(e)
       return False
-  
+
   @require_database
   def save(self):
     """ Saves this model to Cloud Firestore """
@@ -188,7 +190,7 @@ class Model:
   @require_database
   def set(self, kvs):
     """ Set values on this model
-      @param kvs A dictionary containing key value pairs to set on this model. 
+      @param kvs A dictionary containing key value pairs to set on this model.
       Unrecognized keys are ignored
     """
     collection_name = self.__class__.__name__
