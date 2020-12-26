@@ -34,6 +34,15 @@ u1 = User.make(
     save=True
   )
 
+# Also, you are able to pass a custom id when you create a model object
+u2 = User.make(
+    doc_id="custom-id"
+    first_name='Sonic',
+    last_name='Brown',
+    occupation='circus dog'
+    save=True
+  )
+
 # Fetch all users that match a given query
 users = User.query([
     ('occupation', 'circus dog'), 

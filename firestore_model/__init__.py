@@ -127,9 +127,10 @@ class Model:
       return None
 
   @classmethod
-  def make(cls, save=False, *args, **kwargs):
+  def make(cls, doc_id=None, save=False, *args, **kwargs): 
     """ Create a new instance of a model class
       @param cls The class of the instance calling make
+      @param doc_id Allow create document with a custom id
       @param save A flag indicating the model should be saved immediately after creation
       @returns A new model instance of type cls
 
@@ -140,7 +141,7 @@ class Model:
             save = True
           )
     """
-    id_str = str(uuid.uuid4())
+    id_str = doc_id if doc_id else str(uuid.uuid4())
     created = get_milliseconds()
     m = cls(id_str, created, created, *args, **kwargs)
     if save: m.save()
