@@ -1,7 +1,7 @@
 import functools
 import uuid
 from dataclasses import asdict, dataclass
-from time import time
+from datetime import datetime, timezone
 
 # --------------------------------------------
 #
@@ -16,11 +16,11 @@ db = None
 #  Utils
 #
 # -------------------------------------------
-def get_milliseconds():
-    """
-    @return Milliseconds since the epoch
-    """
-    return int(round(time() * 1000))
+
+# Pluralise and lowercase class name when writing to firestore to align with firestore
+# best practices
+def to_collection_name(cls):
+    return f"{cls.lower()}s"
 
 
 def require_database(f, *args, **kwargs):
@@ -86,7 +86,7 @@ class Query(object):
         self.q = (
             db.collection(collection_path)
             if collection_path
-            else db.collection(cls.__name__)
+            else db.collection(to_collection_name(cls.__name__))
         )
 
         # parse the params
@@ -125,7 +125,9 @@ class Model:
     @require_database
     def delete_doc(cls, doc_id, collection_path: str = None):
         try:
-            _collection_path = collection_path if collection_path else cls.__name__
+            _collection_path = (
+                collection_path if collection_path else to_collection_name(cls.__name__)
+            )
             result = db.collection(_collection_path).document(doc_id).delete()
         except Exception as e:
             print(e)
@@ -145,7 +147,9 @@ class Model:
             A model instance of type class hydrated w/ data from the database
         """
         try:
-            _collection_path = collection_path if collection_path else cls.__name__
+            _collection_path = (
+                collection_path if collection_path else to_collection_name(cls.__name__)
+            )
             doc_ref = db.collection(_collection_path).document(doc_id).get()
             return cls(**doc_ref.to_dict())
         except Exception as e:
@@ -160,7 +164,7 @@ class Model:
         collection_path: str = None,
         save=False,
         *args,
-        **kwargs
+        **kwargs,
     ):
         """ Create a new instance of a model class
         @param cls
@@ -190,9 +194,11 @@ class Model:
               )
         """
         id_str = doc_id if doc_id else str(uuid.uuid4())
-        created = get_milliseconds()
+        created = datetime.now(timezone.utc)
         modified = created
-        _collection_path = collection_path if collection_path else cls.__name__
+        _collection_path = (
+            collection_path if collection_path else to_collection_name(cls.__name__)
+        )
 
         model = cls(id_str, created, modified, _collection_path, *args, **kwargs)
 
@@ -258,8 +264,9 @@ class Model:
         for k, v in kvs.items():
             if hasattr(self, k):
                 setattr(self, k, v)
-        self.modified = get_milliseconds()
+        self.modified = datetime.now(timezone.utc)
         db.collection(self.collection_path).document(self.id).set(asdict(self))
+        return self
 
     def to_dict(self):
         """ A convenience function that converts this model into a dictionary
